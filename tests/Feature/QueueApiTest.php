@@ -10,6 +10,7 @@ use App\Jobs\Task\TaskUpdateJob;
 use App\Models\Attachment;
 use App\Models\Task;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -17,6 +18,7 @@ use Tests\TestCase;
 
 class QueueApiTest extends TestCase
 {
+     use RefreshDatabase;
 
     /**
      * Summary of test_make_task_job_is_dispatched

@@ -21,17 +21,19 @@ class TeamApiTest extends TestCase
     {
         $this->seed(AdminTableSeeder::class);
 
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role'=>'admin']);
         $user->assignRole('admin');
 
         $token = $user->createToken('test_auth')->plainTextToken;
+        $member1=User::factory()->create(['role'=>'member'])->assignRole('member');
+         $member2=User::factory()->create(['role'=>'member'])->assignRole('member');
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json',
         ])->postJson('/api/make/team', [
             'name' => 'Test Team',
-            'members' => [],
+            'members' => [$member1->id,$member2->id],
         ]);
 
         $response->assertStatus(201)
@@ -47,7 +49,7 @@ class TeamApiTest extends TestCase
     {
         $this->seed(AdminTableSeeder::class);
 
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role'=>'member']);
         $user->assignRole("member");
 
         $team = Team::factory()->create(['owner_id' => $user->id]);
@@ -72,7 +74,7 @@ class TeamApiTest extends TestCase
 {
     $this->seed(AdminTableSeeder::class);
 
-    $user = User::factory()->create();
+    $user = User::factory()->create(['role'=>'member']);
     $user->assignRole('member');
 
     $team = Team::factory()->create(['owner_id' => $user->id]);
@@ -106,7 +108,7 @@ class TeamApiTest extends TestCase
     {
         $this->seed(AdminTableSeeder::class);
 
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role'=>'member']);
         $user->assignRole('member');
 
         $team = Team::factory()->create(['owner_id' => $user->id]);
@@ -132,7 +134,7 @@ class TeamApiTest extends TestCase
     public function test_user_cannot_view_unauthorized_team()
     {
         $this->seed(AdminTableSeeder::class);
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role'=>'member']);
         $user->assignRole('member');
 
         $team = Team::factory()->create();
@@ -144,7 +146,7 @@ class TeamApiTest extends TestCase
             'Accept' => 'application/json',
         ])->getJson("/api/get/team/{$team->id}");
 
-        $response->assertForbidden(); // 403
+        $response->assertForbidden(); 
     }
 
 
@@ -155,10 +157,10 @@ class TeamApiTest extends TestCase
     public function test_user_cannot_update_unauthorized_team()
     {
         $this->seed(AdminTableSeeder::class);
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role'=>'member']);
         $user->assignRole('member');
 
-        $team = Team::factory()->create(); // ليس مالكه
+        $team = Team::factory()->create(); 
 
         $token = $user->createToken('test_auth')->plainTextToken;
 
@@ -180,7 +182,7 @@ class TeamApiTest extends TestCase
     public function test_user_cannot_delete_unauthorized_team()
     {
         $this->seed(AdminTableSeeder::class);
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role'=>'member']);
         $user->assignRole('member');
 
         $team = Team::factory()->create();

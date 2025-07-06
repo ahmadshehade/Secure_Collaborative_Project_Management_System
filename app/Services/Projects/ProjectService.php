@@ -58,13 +58,12 @@ class ProjectService implements ProjectInterface
     }
 
 
-
     /**
      * Summary of store
      * @param mixed $request
      * @return array{data: mixed, success: bool}
      */
-    public function  store($request)
+    public function store($request)
     {
         try {
             DB::beginTransaction();
@@ -171,7 +170,6 @@ class ProjectService implements ProjectInterface
             throw $e;
         }
     }
-
 
 
     /**

@@ -96,7 +96,7 @@ class TaskEventTest extends TestCase
     {
         Event::fake();
         $this->seed(AdminTableSeeder::class);
-        $user = User::factory()->create()->assignRole('project_manager');
+        $user = User::factory()->create(['role'=>'project_manager'])->assignRole('project_manager');
         $this->actingAs($user, 'api');
 
         $project = \App\Models\Project::factory()->create([
@@ -126,7 +126,7 @@ class TaskEventTest extends TestCase
         Notification::fake();
         $this->seed(AdminTableSeeder::class);
         $user = User::factory()->create();
-        $assigned = User::factory()->create();
+        $assigned = User::factory()->create(['role'=>'member']);
         $manager = User::factory()->create()->assignRole('project_manager');
 
         $task = Task::factory()->create([
@@ -149,7 +149,7 @@ class TaskEventTest extends TestCase
         Bus::fake();
         $this->seed(AdminTableSeeder::class);
         $user = User::factory()->create();
-        $assigned = User::factory()->create()->assignRole('member');
+        $assigned = User::factory()->create(['role'=>'member'])->assignRole('member');
         $task = Task::factory()->create(['assigned_to_user_id' => $assigned->id]);
 
         $event = new MakeTaskEvent($task, $user);
@@ -176,7 +176,7 @@ class TaskEventTest extends TestCase
         $this->seed(AdminTableSeeder::class);
         $updatedBy = User::factory()->create();
         $assignedUser = User::factory()->create();
-        $manager = User::factory()->create()->assignRole('project_manager');
+        $manager = User::factory()->create(['role'=>'project_manager'])->assignRole('project_manager');
 
         $task = Task::factory()->create([
             'assigned_to_user_id' => $assignedUser->id,
@@ -201,7 +201,7 @@ class TaskEventTest extends TestCase
         Bus::fake();
         $this->seed(AdminTableSeeder::class);
         $updatedBy = User::factory()->create();
-        $assignedUser = User::factory()->create()->assignRole('member');
+        $assignedUser = User::factory()->create(['role'=>'member'])->assignRole('member');
 
         $task = Task::factory()->create([
             'assigned_to_user_id' => $assignedUser->id,
@@ -228,9 +228,9 @@ class TaskEventTest extends TestCase
     {
         Notification::fake();
         $this->seed(AdminTableSeeder::class);
-        $creator = User::factory()->create()->assignRole('member');
-        $member1 = User::factory()->create()->assignRole('member');
-        $member2 = User::factory()->create()->assignRole('member');
+        $creator = User::factory()->create(['role'=>'member'])->assignRole('member');
+        $member1 = User::factory()->create(['role'=>'member'])->assignRole('member');
+        $member2 = User::factory()->create(['role'=>'member'])->assignRole('member');
 
         $task = Task::factory()->create();
         $project = $task->project;

@@ -63,12 +63,12 @@ class TaskApiTest extends TestCase
     public function test_can_create_task()
     {
         $project = Project::factory()->create();
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role'=>'member']);
 
 
         $project->members()->attach($user->id);
 
-        $creator = User::factory()->create();
+        $creator = User::factory()->create(['role'=>'project_manager']);
         $creator->assignRole('project_manager');
         $this->actingAs($creator, 'api');
 
@@ -136,7 +136,7 @@ class TaskApiTest extends TestCase
      */
     public function test_can_delete_a_task()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role'=>'member'])->assignRole('member');
         $task = Task::factory()->create(['project_id' => $this->project->id,  'assigned_to_user_id' => $user->id]);
 
         $response = $this->deleteJson("api/delete/task/{$task->id}");
@@ -172,7 +172,7 @@ class TaskApiTest extends TestCase
      */
     public function test_user_without_permission_cannot_view_task()
     {
-        $unauthorizedUser = User::factory()->create();
+        $unauthorizedUser = User::factory()->create(['role'=>'member']);
         $task = Task::factory()->create(['project_id' => $this->project->id]);
 
         $response = $this->actingAs($unauthorizedUser, 'api')
@@ -186,7 +186,7 @@ class TaskApiTest extends TestCase
      */
     public function test_user_without_permission_cannot_update_task()
     {
-        $unauthorizedUser = User::factory()->create();
+        $unauthorizedUser = User::factory()->create(['role'=>'member']);
         $task = Task::factory()->create(['project_id' => $this->project->id]);
 
         $response = $this->actingAs($unauthorizedUser, 'api')
@@ -212,7 +212,7 @@ class TaskApiTest extends TestCase
      */
     public function test_user_not_in_project_cannot_delete_task()
     {
-        $otherUser = User::factory()->create()->assignRole('member');
+        $otherUser = User::factory()->create(['role'=>'member'])->assignRole('member');
         $task = Task::factory()->create(['project_id' => $this->project->id]);
 
         $response = $this->actingAs($otherUser, 'api')

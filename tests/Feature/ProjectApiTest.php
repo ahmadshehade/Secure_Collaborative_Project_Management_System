@@ -23,7 +23,7 @@ class ProjectApiTest extends TestCase
     public function test_admin_can_create_project()
     {
         $this->seed(AdminTableSeeder::class);
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role'=>'admin']);
         $team = Team::factory()->create();
         $user->assignRole('admin');
         $token = $user->createToken('test_exa')->plainTextToken;
@@ -57,7 +57,7 @@ class ProjectApiTest extends TestCase
     public function test_admin_can_view_all_projects()
     {
         $this->seed(AdminTableSeeder::class);
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role'=>'admin']);
         $team = Team::factory()->create();
         $user->assignRole('admin');
         $token = $user->createToken('test_exa')->plainTextToken;
@@ -78,9 +78,9 @@ class ProjectApiTest extends TestCase
     public function test_team_owner_can_update_project()
     {
         $this->seed(AdminTableSeeder::class);
-        $user = User::factory()->create();
-        $team = Team::factory()->create();
-        $user->assignRole('admin');
+        $user = User::factory()->create(['role'=>'member']);
+        $team = Team::factory()->create(['owner_id'=>$user->id]);
+        $user->assignRole('member');
         $token = $user->createToken('test_exa')->plainTextToken;
         $project = Project::factory()->create([
             'team_id' => $team->id,
@@ -107,7 +107,7 @@ class ProjectApiTest extends TestCase
     public function test_project_creator_can_delete_project()
     {
         $this->seed(AdminTableSeeder::class);
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role'=>'project_manager']);
         $team = Team::factory()->create();
         $user->assignRole('project_manager');
         $token = $user->createToken('test_exa')->plainTextToken;
@@ -132,7 +132,7 @@ class ProjectApiTest extends TestCase
     public function test_project_show_endpoint()
     {
         $this->seed(AdminTableSeeder::class);
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role'=>'admin']);
         $team = Team::factory()->create();
         $user->assignRole('admin');
         $token = $user->createToken('test_exa')->plainTextToken;
@@ -159,9 +159,9 @@ class ProjectApiTest extends TestCase
     public function test_get_projects_with_late_tasks_endpoint()
     {
         $this->seed(AdminTableSeeder::class);
-        $adminUser = User::factory()->create();
+        $adminUser = User::factory()->create(['role'=>'admin']);
         $adminUser->assignRole('admin');
-        $normalUser = User::factory()->create();
+        $normalUser = User::factory()->create(['role'=>'member']);
         $normalUser->assignRole('member');
         $team = Team::factory()->create([
             'owner_id' => $normalUser->id,
@@ -204,8 +204,8 @@ class ProjectApiTest extends TestCase
      */
     public function test_user_without_permission_cannot_view_project()
     {
-        $user = User::factory()->create();
-        $anotherUser = User::factory()->create();
+        $user = User::factory()->create(['role'=>'member']);
+        $anotherUser = User::factory()->create(['role'=>'member']);
         $team = Team::factory()->create(['owner_id' => $anotherUser->id]);
 
         $project = Project::factory()->create([
@@ -227,7 +227,7 @@ class ProjectApiTest extends TestCase
     public function test_project_manager_can_view_any_project()
     {
         $this->seed(AdminTableSeeder::class);
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role'=>'project_manager']);
         $user->assignRole('project_manager');
 
         $team = Team::factory()->create();
@@ -245,7 +245,7 @@ class ProjectApiTest extends TestCase
      */
     public function test_project_owner_can_view_their_project()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role'=>'member']);
 
         $team = Team::factory()->create(['owner_id' => $user->id]);
         $project = Project::factory()->create([
@@ -267,7 +267,7 @@ class ProjectApiTest extends TestCase
     public function test_project_deleted_from_database()
     {
         $this->seed(AdminTableSeeder::class);
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role'=>'project_manager']);
         $user->assignRole('project_manager');
 
         $team = Team::factory()->create(['owner_id' => $user->id]);
@@ -289,7 +289,7 @@ class ProjectApiTest extends TestCase
     public function test_viewing_non_existing_project_returns_404()
     {
         $this->seed(AdminTableSeeder::class);
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role'=>'admin']);
         $user->assignRole('admin');
 
         $this->actingAs($user, 'api')
@@ -305,7 +305,7 @@ class ProjectApiTest extends TestCase
     {
 
         $this->seed(AdminTableSeeder::class);
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role'=>'admin']);
         $user->assignRole('admin');
 
         $team = Team::factory()->create();
@@ -327,9 +327,9 @@ class ProjectApiTest extends TestCase
     public function test_user_without_permission_cannot_delete_project()
     {
         $this->seed(AdminTableSeeder::class);
-        $owner = User::factory()->create()->assignRole('member');
+        $owner = User::factory()->create(['role'=>'member'])->assignRole('member');
 
-        $otherUser = User::factory()->create()->assignRole('member');
+        $otherUser = User::factory()->create(['role'=>'member'])->assignRole('member');
 
         $team = Team::factory()->create(['owner_id' => $owner->id]);
         $project = Project::factory()->create([

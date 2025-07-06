@@ -6,9 +6,9 @@ use App\Models\Team;
 
 interface TeamRepositoryInterface
 {
-    public function getAllTeams(); 
+    public function getAllTeams();
 
-    public function getTeamById(int $teamId); 
+    public function getTeamById(int $teamId);
 
     public function createTeam(array $data);
 
@@ -18,5 +18,5 @@ interface TeamRepositoryInterface
 
     public function getMostActiveTeams(int $limit = 10);
 
-        public function attachMembers(Team $team, array $memberIds);
+    public function attachMembers(Team $team, array $memberIds);
 }
